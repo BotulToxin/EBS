@@ -9,3 +9,6 @@ Most data in EBS will be stored in something called a compound, you can create i
 The EbsCompound is split into 3 different interfaces, [CompoundGetter](src/main/java/me/julie/ebs/element/CompoundGetter.java) which hosts getter methods such as ``EbsElement.get(String)``; [CompoundSetter](src/main/java/me/julie/ebs/element/CompoundSetter.java) which has methods relating to adding elements into the compound and finally [EbsCompound](src/main/java/me/julie/ebs/element/EbsCompound.java) itself which implements ``EbsElement``.
   
 For more info and javadocs check out the above hyper links
+
+## Dependencies
+EBS depends on unimi's FastUtil
