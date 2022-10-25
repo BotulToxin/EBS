@@ -1,7 +1,6 @@
 package me.julie.ebs.element;
 
-import me.julie.ebs.EbsUtil;
-
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
@@ -12,26 +11,26 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the element
      * @param element The element to put
      */
-    void put(String name, EbsElement element);
+    void put(@Nonnull String name, @Nonnull EbsElement element);
 
     /**
      * Puts all the entries of the given compound into this compound
      * @param compound The compound to merge with
      */
-    void putAll(EbsCompound compound);
+    void putAll(@Nonnull EbsCompound compound);
 
     /**
      * Removes the given element
      * @param name the name of the element to remove
      */
-    void remove(String name);
+    void remove(@Nonnull String name);
 
     /**
      * Puts a string into this compound
      * @param name The name of the element
      * @param val The value of the element
      */
-    default void putString(String name, String val) {
+    default void putString(@Nonnull String name, @Nonnull String val) {
         put(name, new EbsString(val));
     }
 
@@ -40,7 +39,7 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the element
      * @param val The value of the element
      */
-    default void putUUID(String name, UUID val) {
+    default void putUUID(@Nonnull String name, @Nonnull UUID val) {
         put(name, new EbsUUID(val));
     }
 
@@ -49,17 +48,8 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the element
      * @param val The value of the element
      */
-    default void putBool(String name, boolean val) {
-        put(name, EbsNumber.ofBool(val));
-    }
-
-    /**
-     * Puts an enum into this compound
-     * @param name The name of the element
-     * @param val The value of the element
-     */
-    default void putEnum(String name, Enum val) {
-        put(name, new EbsEnum<>(val));
+    default void putBool(@Nonnull String name, boolean val) {
+        put(name, EbsElements.of(val));
     }
 
     /**
@@ -67,49 +57,63 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the element
      * @param val The value of the element
      */
-    default void putNumber(String name, Number val) { put(name, EbsNumber.of(val)); }
+    default void putNumber(@Nonnull String name, Number val) {
+        put(name, EbsElements.of(val));
+    }
 
     /**
      * Puts a byte into this compound
      * @param name The name of the element
      * @param val The value of the element
      */
-    default void putByte(String name, byte val) { put(name, EbsNumber.ofByte(val)); }
+    default void putByte(@Nonnull String name, byte val) {
+        put(name, EbsElements.of(val));
+    }
 
     /**
      * Puts a short into this compound
      * @param name The name of the element
      * @param val The value of the element
      */
-    default void putShort(String name, short val) { put(name, EbsNumber.ofShort(val)); }
+    default void putShort(@Nonnull String name, short val) {
+        put(name, EbsElements.of(val));
+    }
 
     /**
      * Puts an int into this compound
      * @param name The name of the element
      * @param val The value of the element
      */
-    default void putInt(String name, int val) { put(name, EbsNumber.ofInt(val)); }
+    default void putInt(@Nonnull String name, int val) {
+        put(name, EbsElements.of(val));
+    }
 
     /**
      * Puts a long into this compound
      * @param name The name of the element
      * @param val The value of the element
      */
-    default void putLong(String name, long val) { put(name, EbsNumber.ofLong(val)); }
+    default void putLong(@Nonnull String name, long val) {
+        put(name, EbsElements.of(val));
+    }
 
     /**
      * Puts a float into this compound
      * @param name The name of the element
      * @param val The value of the element
      */
-    default void putFloat(String name, float val) { put(name, EbsNumber.ofFloat(val)); }
+    default void putFloat(@Nonnull String name, float val) {
+        put(name, EbsElements.of(val));
+    }
 
     /**
      * Puts a double into this compound
      * @param name The name of the element
      * @param val The value of the element
      */
-    default void putDouble(String name, double val) { put(name, EbsNumber.ofDouble(val)); }
+    default void putDouble(@Nonnull String name, double val) {
+        put(name, EbsElements.of(val));
+    }
 
 
     /**
@@ -117,8 +121,8 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the element
      * @param val The value of the element
      */
-    default void putStringList(String name, Collection<String> val) {
-        put(name, EbsArray.fromPrimitive(val, EbsString::new, EbsString.TYPE));
+    default void putStringList(@Nonnull String name, @Nonnull Collection<String> val) {
+        put(name, EbsElements.fromPrimitive(val, EbsString::new, EbsString.TYPE));
     }
 
     /**
@@ -126,7 +130,7 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the array
      * @param arr The array elements
      */
-    default void putStringArray(String name, String... arr) {
+    default void putStringArray(@Nonnull String name, @Nonnull String... arr) {
         putStringList(name, Arrays.asList(arr));
     }
 
@@ -135,8 +139,8 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the array
      * @param uuids The list elements
      */
-    default void putUUIDList(String name, Collection<UUID> uuids) {
-        put(name, EbsArray.fromPrimitive(uuids, EbsUUID::new, EbsUUID.TYPE));
+    default void putUUIDList(@Nonnull String name, @Nonnull Collection<UUID> uuids) {
+        put(name, EbsElements.fromPrimitive(uuids, EbsUUID::new, EbsUUID.TYPE));
     }
 
     /**
@@ -144,7 +148,7 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the array
      * @param arr The array elements
      */
-    default void putUUIDArray(String name, UUID... arr) {
+    default void putUUIDArray(@Nonnull String name, @Nonnull UUID... arr) {
         putUUIDList(name, Arrays.asList(arr));
     }
 
@@ -153,8 +157,8 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the array
      * @param arr The elements of the array
      */
-    default void putIntArray(String name, int... arr) {
-        put(name, EbsUtil.fromIntArray(arr));
+    default void putIntArray(@Nonnull String name, @Nonnull int... arr) {
+        put(name, EbsElements.fromIntArray(arr));
     }
 
     /**
@@ -162,8 +166,8 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the array
      * @param arr The elements of the array
      */
-    default void putLongArray(String name, long... arr) {
-        put(name, EbsUtil.fromLongArray(arr));
+    default void putLongArray(@Nonnull String name, @Nonnull long... arr) {
+        put(name, EbsElements.fromLongArray(arr));
     }
 
     /**
@@ -171,8 +175,8 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the array
      * @param arr The elements of the array
      */
-    default void putFloatArray(String name, float... arr) {
-        put(name, EbsUtil.fromFloatArray(arr));
+    default void putFloatArray(@Nonnull String name, @Nonnull float... arr) {
+        put(name, EbsElements.fromFloatArray(arr));
     }
 
     /**
@@ -180,8 +184,8 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the array
      * @param arr The elements of the array
      */
-    default void putDoubleArray(String name, double... arr) {
-        put(name, EbsUtil.fromDoubleArray(arr));
+    default void putDoubleArray(@Nonnull String name, @Nonnull double... arr) {
+        put(name, EbsElements.fromDoubleArray(arr));
     }
 
     /**
@@ -189,8 +193,8 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the array
      * @param arr The elements of the array
      */
-    default void putByteArray(String name, byte... arr) {
-        put(name, EbsUtil.fromByteArray(arr));
+    default void putByteArray(@Nonnull String name, @Nonnull byte... arr) {
+        put(name, EbsElements.fromByteArray(arr));
     }
 
     /**
@@ -198,7 +202,7 @@ public interface CompoundSetter extends CompoundGetter {
      * @param name The name of the array
      * @param arr The elements of the array
      */
-    default void putShortArray(String name, short... arr) {
-        put(name, EbsUtil.fromShortArray(arr));
+    default void putShortArray(@Nonnull String name, @Nonnull short... arr) {
+        put(name, EbsElements.fromShortArray(arr));
     }
 }

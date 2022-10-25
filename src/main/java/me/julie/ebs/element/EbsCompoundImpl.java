@@ -6,6 +6,7 @@ import me.julie.ebs.type.EbsType;
 import me.julie.ebs.visitor.EbsVisitor;
 import me.julie.ebs.visitor.StringEbsVisitor;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -29,12 +30,12 @@ class EbsCompoundImpl implements EbsCompound {
     }
 
     @Override
-    public EbsElement get(String name) {
+    public EbsElement get(@Nonnull String name) {
         return entries.get(Objects.requireNonNull(name, "get(String) called, name null"));
     }
 
     @Override
-    public void put(String name, EbsElement element) {
+    public void put(@Nonnull String name, @Nonnull EbsElement element) {
         entries.put(
                 Objects.requireNonNull(name, "put(String, EbsElement) called, name null"),
                 Objects.requireNonNull(element, "Given element cannot be null")
@@ -42,12 +43,12 @@ class EbsCompoundImpl implements EbsCompound {
     }
 
     @Override
-    public void putAll(EbsCompound compound) {
+    public void putAll(@Nonnull EbsCompound compound) {
         entries.putAll(((EbsCompoundImpl) compound).entries);
     }
 
     @Override
-    public void remove(String name) {
+    public void remove(@Nonnull String name) {
         entries.remove(Objects.requireNonNull(name, "remove(String) called, name null"));
     }
 
@@ -89,7 +90,8 @@ class EbsCompoundImpl implements EbsCompound {
         EbsCompoundImpl result = new EbsCompoundImpl(entries.size());
 
         for (Map.Entry<String, EbsElement> e: entrySet()) {
-            result.put(e.getKey(), e.getValue().clone());
+            EbsElement value = EbsElements.deepClone(e.getValue());
+            result.put(e.getKey(), value);
         }
 
         return result;
@@ -97,6 +99,7 @@ class EbsCompoundImpl implements EbsCompound {
 
     @Override
     public String toString() {
-        return new StringEbsVisitor().visit(getClass().getSimpleName(), this);
+        return new StringEbsVisitor()
+                .visit(getClass().getSimpleName(), this);
     }
 }

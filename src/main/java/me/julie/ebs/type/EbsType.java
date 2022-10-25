@@ -1,5 +1,6 @@
 package me.julie.ebs.type;
 
+import me.julie.ebs.EbsTypeRegistry;
 import me.julie.ebs.element.EbsElement;
 
 import java.io.DataInput;
@@ -17,7 +18,7 @@ public interface EbsType<T extends EbsElement> {
      * @return The read element
      * @throws IOException When any error occurs
      */
-    T read(DataInput input) throws IOException;
+    T read(EbsTypeRegistry registry, DataInput input) throws IOException;
 
     /**
      * Writes the element into the given output
@@ -25,5 +26,5 @@ public interface EbsType<T extends EbsElement> {
      * @param val The value to write
      * @throws IOException When any error occurs
      */
-    void write(DataOutput output, T val) throws IOException;
+    void write(EbsTypeRegistry registry, DataOutput output, T val) throws IOException;
 }

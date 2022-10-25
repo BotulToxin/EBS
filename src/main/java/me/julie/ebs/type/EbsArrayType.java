@@ -1,8 +1,9 @@
 package me.julie.ebs.type;
 
-import me.julie.ebs.EBS;
-import me.julie.ebs.element.EbsElement;
+import me.julie.ebs.EbsTypeRegistry;
 import me.julie.ebs.element.EbsArray;
+import me.julie.ebs.element.EbsElement;
+import me.julie.ebs.element.EbsElements;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -10,6 +11,7 @@ import java.io.IOException;
 
 public class EbsArrayType implements EbsType<EbsArray> {
     static final EbsArrayType INSTANCE = new EbsArrayType();
+    static final int UNSET_TYPE = -1;
 
     public static EbsArrayType getInstance() {
         return INSTANCE;
@@ -29,17 +31,27 @@ public class EbsArrayType implements EbsType<EbsArray> {
     //
 
     @Override
-    public EbsArray read(DataInput input) throws IOException {
+    public EbsArray read(EbsTypeRegistry registry,DataInput input) throws IOException {
         // Read the size
         int size = input.readInt();
         // Read the type
-        EbsType type = EBS.readType(input);
-        EbsArray array = EbsArray.create(type, size);
+        EbsArray array = EbsElements.newArray(size);
+        int id = input.readInt();
+
+        if (id == UNSET_TYPE) {
+            return array;
+        }
+
+        EbsType type = registry.get(id);
+
+        if (type == null) {
+            throw new IOException("Unknown type: " + id);
+        }
 
         // Read the elements, if they exist
         if(size > 0) {
             for (int i = 0; i < size; i++) {
-                array.add(type.read(input));
+                array.add(type.read(registry, input));
             }
         }
 
@@ -47,7 +59,7 @@ public class EbsArrayType implements EbsType<EbsArray> {
     }
 
     @Override
-    public void write(DataOutput output, EbsArray val) throws IOException {
+    public void write(EbsTypeRegistry registry, DataOutput output, EbsArray val) throws IOException {
         // I love type parameters
         EbsArray<EbsElement> arr = val;
 
@@ -56,11 +68,15 @@ public class EbsArrayType implements EbsType<EbsArray> {
         EbsType<EbsElement> type = arr.arrayType();
 
         // Write the type
-        EBS.writeType(output, type);
+        if (type == null) {
+            output.writeInt(UNSET_TYPE);
+        } else {
+            registry.writeType(type, output);
 
-        // Write each element
-        for (EbsElement e: arr) {
-            type.write(output, e);
+            // Write each element
+            for (EbsElement e: arr) {
+                type.write(registry, output, e);
+            }
         }
     }
 }

@@ -8,23 +8,6 @@ import java.util.Set;
 
 public interface EbsCompound extends CompoundSetter, EbsElement {
     /**
-     * Creates a compound array with a size of 16
-     * @return The created array
-     */
-    static EbsCompound create() {
-        return create(16);
-    }
-
-    /**
-     * Creates a compound with the given size
-     * @param expectedSize The size to create the compound with
-     * @return The created compound
-     */
-    static EbsCompound create(int expectedSize) {
-        return new EbsCompoundImpl(expectedSize);
-    }
-
-    /**
      * Gets the entry set of the compound
      * @return The compound's entry set
      */

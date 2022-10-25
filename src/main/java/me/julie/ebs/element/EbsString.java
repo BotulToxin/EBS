@@ -1,5 +1,6 @@
 package me.julie.ebs.element;
 
+import me.julie.ebs.EbsTypeRegistry;
 import me.julie.ebs.type.EbsType;
 import me.julie.ebs.visitor.EbsVisitor;
 
@@ -11,12 +12,12 @@ import java.util.stream.IntStream;
 public class EbsString extends AbstractValuedElement<String> implements CharSequence {
     public static final EbsType<EbsString> TYPE = new EbsType<>() {
         @Override
-        public EbsString read(DataInput input) throws IOException {
+        public EbsString read(EbsTypeRegistry registry, DataInput input) throws IOException {
             return new EbsString(input.readUTF());
         }
 
         @Override
-        public void write(DataOutput output, EbsString val) throws IOException {
+        public void write(EbsTypeRegistry registry, DataOutput output, EbsString val) throws IOException {
             output.writeUTF(val.value());
         }
     };
@@ -51,8 +52,8 @@ public class EbsString extends AbstractValuedElement<String> implements CharSequ
     }
 
     @Override
-    public CharSequence subSequence(int start, int end) {
-        return value.subSequence(start, end);
+    public EbsString subSequence(int start, int end) {
+        return new EbsString(value.substring(start, end));
     }
 
     @Override

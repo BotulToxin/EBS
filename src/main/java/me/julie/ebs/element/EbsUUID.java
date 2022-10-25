@@ -1,5 +1,6 @@
 package me.julie.ebs.element;
 
+import me.julie.ebs.EbsTypeRegistry;
 import me.julie.ebs.type.EbsType;
 import me.julie.ebs.visitor.EbsVisitor;
 
@@ -18,12 +19,12 @@ public class EbsUUID extends AbstractValuedElement<UUID> {
      */
     public static final EbsType<EbsUUID> TYPE = new EbsType<>() {
         @Override
-        public EbsUUID read(DataInput input) throws IOException {
+        public EbsUUID read(EbsTypeRegistry registry,DataInput input) throws IOException {
             return new EbsUUID(input.readLong(), input.readLong());
         }
 
         @Override
-        public void write(DataOutput output, EbsUUID val) throws IOException {
+        public void write(EbsTypeRegistry registry, DataOutput output, EbsUUID val) throws IOException {
             output.writeLong(val.value().getMostSignificantBits());
             output.writeLong(val.value().getLeastSignificantBits());
         }

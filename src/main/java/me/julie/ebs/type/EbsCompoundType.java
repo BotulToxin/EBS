@@ -1,8 +1,9 @@
 package me.julie.ebs.type;
 
-import me.julie.ebs.EBS;
-import me.julie.ebs.element.EbsElement;
+import me.julie.ebs.EbsTypeRegistry;
 import me.julie.ebs.element.EbsCompound;
+import me.julie.ebs.element.EbsElement;
+import me.julie.ebs.element.EbsElements;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -29,18 +30,18 @@ public class EbsCompoundType implements EbsType<EbsCompound> {
     //
 
     @Override
-    public EbsCompound read(DataInput input) throws IOException {
+    public EbsCompound read(EbsTypeRegistry registry, DataInput input) throws IOException {
         // Read the size
         int size = input.readInt();
-        EbsCompound compound = EbsCompound.create(size);
+        EbsCompound compound = EbsElements.newCompound(size);
 
         // If the size is bigger than 0
         if(size > 0) {
             for (int i = 0; i < size; i++) {
                 String key = input.readUTF();
-                EbsType type = EBS.readType(input);
+                EbsType type = registry.readType(input);
 
-                EbsElement element = type.read(input);
+                EbsElement element = type.read(registry, input);
                 compound.put(key, element);
             }
         }
@@ -49,7 +50,7 @@ public class EbsCompoundType implements EbsType<EbsCompound> {
     }
 
     @Override
-    public void write(DataOutput output, EbsCompound val) throws IOException {
+    public void write(EbsTypeRegistry registry, DataOutput output, EbsCompound val) throws IOException {
         // Write the size
         output.writeInt(val.size());
 
@@ -59,8 +60,9 @@ public class EbsCompoundType implements EbsType<EbsCompound> {
 
             // Compound standard: key; type; value
             output.writeUTF(e.getKey());
-            EBS.writeType(output, type);
-            type.write(output, e.getValue());
+
+            registry.writeType(type, output);
+            type.write(registry, output, e.getValue());
         }
     }
 }

@@ -20,7 +20,7 @@ public interface EbsVisitor {
      * @see EbsVisitor#visitUnknown(EbsElement)
      * @param valuedElement The element to visit
      */
-    default void visitUnknownValued(EbsValuedElement valuedElement) {
+    default void visitUnknownValued(EbsValuedElement<?> valuedElement) {
         visitUnknown(valuedElement);
     }
 
@@ -55,8 +55,8 @@ public interface EbsVisitor {
     void visitString(EbsString string);
 
     /**
-     * Visits an enum element
-     * @param ebsEnum The element to visit
+     * Visits a boolean element
+     * @param bool The element
      */
-    void visitEnum(EbsEnum ebsEnum);
+    void visitBool(EbsBoolean bool);
 }

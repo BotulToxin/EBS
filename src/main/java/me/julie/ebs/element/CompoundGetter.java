@@ -1,11 +1,14 @@
 package me.julie.ebs.element;
 
-import me.julie.ebs.EbsUtil;
 import me.julie.ebs.type.EbsArrayType;
-import me.julie.ebs.type.EbsNumericalTypes;
+import me.julie.ebs.type.EbsCompoundType;
+import me.julie.ebs.type.EbsNumberType;
 import me.julie.ebs.type.EbsType;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +24,7 @@ public interface CompoundGetter {
      * @param name The name of the element to get
      * @return The gotten element, null, if not found
      */
-    EbsElement get(String name);
+    @Nullable EbsElement get(@Nonnull String name);
 
     /**
      * Checks if the compound is empty
@@ -36,7 +39,7 @@ public interface CompoundGetter {
      * @param name The name to check
      * @return True, if an element with the given name was found, false otherwise
      */
-    default boolean contains(String name) {
+    default boolean contains(@Nonnull String name) {
         return get(name) != null;
     }
 
@@ -47,7 +50,7 @@ public interface CompoundGetter {
      * @param type The type to check
      * @return True, if an element was found that matched the name and type, false otherwise
      */
-    default boolean contains(String name, EbsType type) {
+    default boolean contains(@Nonnull String name, @Nonnull EbsType type) {
         return get(name, type) != null;
     }
 
@@ -62,8 +65,14 @@ public interface CompoundGetter {
      *         found or the found element's type did not
      *         match the given one
      */
-    default <T extends EbsElement> T get(String name, EbsType<T> type) {
+    @Nullable
+    default <T extends EbsElement> T get(@Nonnull String name, @Nonnull EbsType<T> type) {
         EbsElement element = get(name);
+
+        if (element == null) {
+            return null;
+        }
+
         return element.getType().equals(type) ? (T) element : null;
     }
 
@@ -73,21 +82,26 @@ public interface CompoundGetter {
      * @return The number, null, if the element wasn't found
      *         or if the element was not a number
      */
-    default EbsNumber getNumber(String name) {
+    @Nullable
+    default EbsNumber getNumber(@Nonnull String name) {
         EbsElement element = get(name);
         return (element instanceof EbsNumber number) ? number : null;
     }
 
     /**
      * Gets a numerical element with the given numerical type.
-     * @see EbsNumericalTypes
+     * @see EbsNumberType
      * @param name The name of the element
      * @param numberType The numerical type
      * @return The gotten element, null, if not found or if the number type did not match
      */
-    default EbsNumber getNumber(String name, EbsType<EbsNumber> numberType) {
+    @Nullable
+    default EbsNumber getNumber(@Nonnull String name, @Nonnull EbsType<EbsNumber> numberType) {
         EbsNumber num = getNumber(name);
-        if(num == null) return null;
+
+        if (num == null) {
+            return null;
+        }
 
         return num.getType().equals(numberType) ? num : null;
     }
@@ -96,7 +110,9 @@ public interface CompoundGetter {
      * Same as {@link CompoundGetter#getBool(String, boolean)}  with def as 'false'
      * @see CompoundGetter#getBool(String, boolean)
      */
-    default boolean getBool(String name) { return getBool(name, false); }
+    default boolean getBool(@Nonnull String name) {
+        return getBool(name, false);
+    }
 
     /**
      * Gets a boolean
@@ -104,15 +120,17 @@ public interface CompoundGetter {
      * @param def The default return value
      * @return Either the value of the gotten element or def
      */
-    default boolean getBool(String name, boolean def) {
-        return getByte(name, EbsNumber.boolToByte(def)) != 0;
+    default boolean getBool(@Nonnull String name, boolean def) {
+        return getByte(name, EbsElements.boolToByte(def)) != 0;
     }
 
     /**
      * Same as {@link CompoundGetter#getByte(String, byte)}  with def as '0'
      * @see CompoundGetter#getByte(String, byte)
      */
-    default byte getByte(String name) { return getByte(name, (byte) 0); }
+    default byte getByte(@Nonnull String name) {
+        return getByte(name, (byte) 0);
+    }
 
     /**
      * Gets a byte
@@ -120,8 +138,8 @@ public interface CompoundGetter {
      * @param def The default return value
      * @return Either the value of the gotten element or def
      */
-    default byte getByte(String name, byte def) {
-        EbsNumber num = getNumber(name, EbsNumericalTypes.BYTE);
+    default byte getByte(@Nonnull String name, byte def) {
+        EbsNumber num = getNumber(name, EbsNumberType.BYTE);
         return num == null ? def : num.byteValue();
     }
 
@@ -129,7 +147,9 @@ public interface CompoundGetter {
      * Same as {@link CompoundGetter#getShort(String, short)} with def as '0'
      * @see CompoundGetter#getShort(String, short)
      */
-    default short getShort(String name) { return getShort(name, (short) 0); }
+    default short getShort(@Nonnull String name) {
+        return getShort(name, (short) 0);
+    }
 
     /**
      * Gets a short
@@ -137,8 +157,8 @@ public interface CompoundGetter {
      * @param def The default return value
      * @return Either the value of the gotten element or def
      */
-    default short getShort(String name, short def) {
-        EbsNumber num = getNumber(name, EbsNumericalTypes.SHORT);
+    default short getShort(@Nonnull String name, short def) {
+        EbsNumber num = getNumber(name, EbsNumberType.SHORT);
         return num == null ? def : num.shortValue();
     }
 
@@ -146,7 +166,9 @@ public interface CompoundGetter {
      * Same as {@link CompoundGetter#getInt(String, int)} with def as '0'
      * @see CompoundGetter#getInt(String, int)
      */
-    default int getInt(String name) { return getInt(name, 0); }
+    default int getInt(@Nonnull String name) {
+        return getInt(name, 0);
+    }
 
     /**
      * Gets an integer
@@ -154,8 +176,8 @@ public interface CompoundGetter {
      * @param def The default return value
      * @return Either the value of the gotten element or def
      */
-    default int getInt(String name, int def) {
-        EbsNumber num = getNumber(name, EbsNumericalTypes.INTEGER);
+    default int getInt(@Nonnull String name, int def) {
+        EbsNumber num = getNumber(name, EbsNumberType.INTEGER);
         return num == null ? def : num.intValue();
     }
 
@@ -163,7 +185,9 @@ public interface CompoundGetter {
      * Same as {@link CompoundGetter#getLong(String, long)} with def as '0'
      * @see CompoundGetter#getLong(String, long)
      */
-    default long getLong(String name) { return getLong(name, 0L); }
+    default long getLong(@Nonnull String name) {
+        return getLong(name, 0L);
+    }
 
     /**
      * Gets a long
@@ -171,8 +195,8 @@ public interface CompoundGetter {
      * @param def The default return value
      * @return Either the value of the gotten element or def
      */
-    default long getLong(String name, long def) {
-        EbsNumber num = getNumber(name, EbsNumericalTypes.LONG);
+    default long getLong(@Nonnull String name, long def) {
+        EbsNumber num = getNumber(name, EbsNumberType.LONG);
         return num == null ? def : num.longValue();
     }
 
@@ -180,7 +204,9 @@ public interface CompoundGetter {
      * Same as {@link CompoundGetter#getFloat(String, float)} with def as '0'
      * @see CompoundGetter#getFloat(String, float)
      */
-    default float getFloat(String name) { return getFloat(name, 0F); }
+    default float getFloat(@Nonnull String name) {
+        return getFloat(name, 0F);
+    }
 
     /**
      * Gets a float
@@ -188,8 +214,8 @@ public interface CompoundGetter {
      * @param def The default return value
      * @return Either the value of the gotten element or def
      */
-    default float getFloat(String name, float def) {
-        EbsNumber num = getNumber(name, EbsNumericalTypes.FLOAT);
+    default float getFloat(@Nonnull String name, float def) {
+        EbsNumber num = getNumber(name, EbsNumberType.FLOAT);
         return num == null ? def : num.floatValue();
     }
 
@@ -197,7 +223,9 @@ public interface CompoundGetter {
      * Same as {@link CompoundGetter#getDouble(String, double)} with def as '0'
      * @see CompoundGetter#getDouble(String, double)
      */
-    default double getDouble(String name) { return getDouble(name, 0D); }
+    default double getDouble(@Nonnull String name) {
+        return getDouble(name, 0D);
+    }
 
     /**
      * Gets a double
@@ -205,8 +233,8 @@ public interface CompoundGetter {
      * @param def The default return value
      * @return Either the value of the gotten element or def
      */
-    default double getDouble(String name, double def) {
-        EbsNumber num = getNumber(name, EbsNumericalTypes.DOUBLE);
+    default double getDouble(@Nonnull String name, double def) {
+        EbsNumber num = getNumber(name, EbsNumberType.DOUBLE);
         return num == null ? def : num.doubleValue();
     }
 
@@ -214,7 +242,9 @@ public interface CompoundGetter {
      * Same as {@link CompoundGetter#getBigInteger(String, BigInteger)} with def as {@link BigInteger#ZERO}
      * @see CompoundGetter#getBigInteger(String, BigInteger)
      */
-    default BigInteger getBigInteger(String name) { return getBigInteger(name, BigInteger.ZERO); }
+    default BigInteger getBigInteger(@Nonnull String name) {
+        return getBigInteger(name, BigInteger.ZERO);
+    }
 
     /**
      * Gets a big integer
@@ -222,8 +252,8 @@ public interface CompoundGetter {
      * @param def The default return value
      * @return Either the value of the gotten element or def
      */
-    default BigInteger getBigInteger(String name, BigInteger def) {
-        EbsNumber num = getNumber(name, EbsNumericalTypes.BIG_INTEGER);
+    default BigInteger getBigInteger(@Nonnull String name, BigInteger def) {
+        EbsNumber num = getNumber(name, EbsNumberType.BIG_INTEGER);
         return num == null ? def : (BigInteger) num.value();
     }
 
@@ -231,7 +261,9 @@ public interface CompoundGetter {
      * Same as {@link CompoundGetter#getString(String, String)} with def as 'null'
      * @see CompoundGetter#getString(String, String)
      */
-    default String getString(String name) { return getString(name, null); }
+    default String getString(@Nonnull String name) {
+        return getString(name, null);
+    }
 
     /**
      * Gets a string
@@ -239,7 +271,7 @@ public interface CompoundGetter {
      * @param def The default return value
      * @return Either the value of the gotten element or def
      */
-    default String getString(String name, String def) {
+    default String getString(@Nonnull String name, @Nullable String def) {
         EbsElement element = get(name, EbsString.TYPE);
         return element == null ? def : ((EbsString) element).value();
     }
@@ -248,7 +280,9 @@ public interface CompoundGetter {
      * Same as {@link CompoundGetter#getUUID(String, UUID)}  with def as 'null'
      * @see CompoundGetter#getUUID(String, UUID)
      */
-    default UUID getUUID(String name) { return getUUID(name, null); }
+    default UUID getUUID(@Nonnull String name) {
+        return getUUID(name, null);
+    }
 
     /**
      * Gets a UUID
@@ -256,7 +290,7 @@ public interface CompoundGetter {
      * @param def The default return value
      * @return Either the value of the gotten element or def
      */
-    default UUID getUUID(String name, UUID def) {
+    default UUID getUUID(@Nonnull String name, @Nullable UUID def) {
         EbsElement element = get(name, EbsUUID.TYPE);
         return element == null ? def : ((EbsUUID) element).value();
     }
@@ -270,7 +304,8 @@ public interface CompoundGetter {
      *         with the given name exists or the found
      *         element is not an array
      */
-    default EbsArray getArray(String name) {
+    @Nullable
+    default EbsArray getArray(@Nonnull String name) {
         return get(name, EbsArrayType.getInstance());
     }
 
@@ -285,9 +320,14 @@ public interface CompoundGetter {
      *         if the element isn't an array
      *         or the array's type is no the given type
      */
-    default <T extends EbsElement> EbsArray<T> getArray(String name, EbsType<T> elementType) {
+    @Nullable
+    default <T extends EbsElement> EbsArray<T> getArray(@Nonnull String name, @Nonnull EbsType<T> elementType) {
         EbsArray array = getArray(name);
-        if(array == null) return null;
+
+        if (array == null) {
+            return null;
+        }
+
         return array.arrayType().equals(elementType) ? array : null;
     }
 
@@ -298,9 +338,10 @@ public interface CompoundGetter {
      * @return The found array, null, if the
      *         element doesn't exist or isn't an int array
      */
-    default int[] getIntArray(String name) {
-        EbsArray<EbsNumber> arr = getArray(name, EbsNumericalTypes.INTEGER);
-        return arr == null ? null : EbsUtil.toIntArray(arr);
+    @Nullable
+    default int[] getIntArray(@Nonnull String name) {
+        EbsArray<EbsNumber> arr = getArray(name, EbsNumberType.INTEGER);
+        return arr == null ? null : EbsElements.toIntArray(arr);
     }
 
     /**
@@ -310,9 +351,10 @@ public interface CompoundGetter {
      * @return The found array, null, if the
      *         element doesn't exist or isn't a long array
      */
-    default long[] getLongArray(String name) {
-        EbsArray<EbsNumber> arr = getArray(name, EbsNumericalTypes.LONG);
-        return arr == null ? null : EbsUtil.toLongArray(arr);
+    @Nullable
+    default long[] getLongArray(@Nonnull String name) {
+        EbsArray<EbsNumber> arr = getArray(name, EbsNumberType.LONG);
+        return arr == null ? null : EbsElements.toLongArray(arr);
     }
 
     /**
@@ -322,9 +364,10 @@ public interface CompoundGetter {
      * @return The found array, null, if the
      *         element doesn't exist or isn't a double array
      */
-    default double[] getDoubleArray(String name) {
-        EbsArray<EbsNumber> arr = getArray(name, EbsNumericalTypes.DOUBLE);
-        return arr == null ? null : EbsUtil.toDoubleArray(arr);
+    @Nullable
+    default double[] getDoubleArray(@Nonnull String name) {
+        EbsArray<EbsNumber> arr = getArray(name, EbsNumberType.DOUBLE);
+        return arr == null ? null : EbsElements.toDoubleArray(arr);
     }
 
     /**
@@ -334,9 +377,10 @@ public interface CompoundGetter {
      * @return The found array, null, if the
      *         element doesn't exist or isn't a float array
      */
-    default float[] getFloatArray(String name) {
-        EbsArray<EbsNumber> arr = getArray(name, EbsNumericalTypes.FLOAT);
-        return arr == null ? null : EbsUtil.toFloatArray(arr);
+    @Nullable
+    default float[] getFloatArray(@Nonnull String name) {
+        EbsArray<EbsNumber> arr = getArray(name, EbsNumberType.FLOAT);
+        return arr == null ? null : EbsElements.toFloatArray(arr);
     }
 
     /**
@@ -346,9 +390,10 @@ public interface CompoundGetter {
      * @return The found array, null, if the
      *         element doesn't exist or isn't a byte array
      */
-    default byte[] getByteArray(String name) {
-        EbsArray<EbsNumber> arr = getArray(name, EbsNumericalTypes.BYTE);
-        return arr == null ? null : EbsUtil.toByteArray(arr);
+    @Nullable
+    default byte[] getByteArray(@Nonnull String name) {
+        EbsArray<EbsNumber> arr = getArray(name, EbsNumberType.BYTE);
+        return arr == null ? null : EbsElements.toByteArray(arr);
     }
 
     /**
@@ -358,53 +403,46 @@ public interface CompoundGetter {
      * @return The found array, null, if the
      *         element doesn't exist or isn't a short array
      */
-    default short[] getShortArray(String name) {
-        EbsArray<EbsNumber> arr = getArray(name, EbsNumericalTypes.SHORT);
-        return arr == null ? null : EbsUtil.toShortArray(arr);
+    @Nullable
+    default short[] getShortArray(@Nonnull String name) {
+        EbsArray<EbsNumber> arr = getArray(name, EbsNumberType.SHORT);
+        return arr == null ? null : EbsElements.toShortArray(arr);
     }
 
     /**
      * Gets a list of strings
      * @param name The name of the array
      *
-     * @return The found array, null, if the
+     * @return The found array, empty list, if the
      *         element doesn't exist or isn't a string array
      */
-    default List<String> getStringList(String name) {
+    @Nonnull
+    default List<String> getStringList(@Nonnull String name) {
         EbsArray<EbsString> arr = getArray(name, EbsString.TYPE);
-        return arr == null ? null : arr.toPrimitive(AbstractValuedElement::value);
+        return arr == null ? Collections.emptyList() : arr.toPrimitive(AbstractValuedElement::value);
     }
 
     /**
      * Gets a list of UUIDs
      * @param name The name of the array
      *
-     * @return The found array, null, if the
+     * @return The found array, empty list, if the
      *         element doesn't exist or isn't a UUID array
      */
-    default List<UUID> getUUIDList(String name) {
+    @Nonnull
+    default List<UUID> getUUIDList(@Nonnull String name) {
         EbsArray<EbsUUID> arr = getArray(name, EbsUUID.TYPE);
-        return arr == null ? null : arr.toPrimitive(AbstractValuedElement::value);
+        return arr == null ? Collections.emptyList() : arr.toPrimitive(AbstractValuedElement::value);
     }
 
     /**
-     * Same as {@link CompoundGetter#getEnum(String, Class, Enum)}  with def as 'null'
-     * @see CompoundGetter#getEnum(String, Class, Enum)
+     * Gets a compound object
+     * @param name The name of the compound
+     *
+     * @return The gotten compound, null, if not found,
+     *         or if the given entry isn't a compound
      */
-    default <E extends Enum<E>> E getEnum(String name, Class<E> clazz) { return getEnum(name, clazz, null); }
-
-    /**
-     * Gets an enum
-     * @param name The name of the element
-     * @param clazz The enum's class
-     * @param def The default return value
-     * @param <E> The enum type
-     * @return The enum, null, if the element doesn't exist or isn't an enum
-     */
-    default <E extends Enum<E>> E getEnum(String name, Class<E> clazz, E def) {
-        EbsEnum ebsEnum = get(name, EbsEnum.TYPE);
-        if(ebsEnum == null) return def;
-
-        return ebsEnum.getEnumClass() == clazz ? (E) ebsEnum.value() : def;
+    default @Nullable EbsCompound getCompound(@Nonnull String name) {
+        return get(name, EbsCompoundType.getInstance());
     }
 }

@@ -1,2 +1,3 @@
-rootProject.name = 'DESF'
+rootProject.name = 'EBS'
+include 'gui'
 
